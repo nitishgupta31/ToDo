@@ -18,9 +18,7 @@ html
         each collection in data
           li.todo-list-item=collection.content
               div.todo-list-item-name
-              
-              //- a.edit(href='')
-              //-   span.fas.fa-edit
-
+              a.edit(href='/edit/'+collection._id)
+                span.fas.fa-edit
               a.remove(href='todos/'+collection._id)
                 span.fas.fa-times

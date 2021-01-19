@@ -1,0 +1,33 @@
+doctype html
+html
+  head
+    title ToDo
+    link(rel='stylesheet', href='/static/style.css', type='text/css')
+    link(href='https://fonts.googleapis.com/css?family=Baloo+Bhai|Candal|Chewy&display=swap', rel='stylesheet')
+    link(rel='stylesheet', href='https://use.fontawesome.com/releases/v5.8.2/css/all.css', integrity='sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay', crossorigin='anonymous')
+  div.todo-container
+    h2 To-Do List
+      params
+    div.todo
+      form.todo-header(action='/', method='POST')
+        input(type='text', name='content')
+        button(type='submit')
+          span.fas.fa-plus
+      h1.list-heading= message
+      ul.todo-list
+        each collection in data
+            if collection._id == idTask
+                li.todo-list-item
+                    div.todo-list-item-name
+                        form(action='/edit/'+ collection._id  method='POST')
+                            input(type='text' value=collection.content name='content')
+                            button(type='submit') Confirm
+                            a.cancel(href='/') Cancel
+            else
+                li.todo-list-item=collection.content
+                    div.todo-list-item-name
+                    a.edit(href='/edit/'+collection._id)
+                        span.fas.fa-edit
+                    a.remove(href='todos/'+collection._id)
+                        span.fas.fa-times                
+

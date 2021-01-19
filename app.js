@@ -5,13 +5,16 @@ const port = process.env.PORT || 8000;
 const mongoose = require("mongoose")
 
 //connecting with mongodb named todo
-mongoose.connect('mongodb+srv://nitish:nitish@cluster0.9uw8i.mongodb.net/todo?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb+srv://nitish:nitish@cluster0.9uw8i.mongodb.net/todo?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true, 'useFindAndModify': false, 'useCreateIndex': true })
     .then(() => console.log("connection succesfull"))
     .catch(() => console.log("error in connecting database"));
 
 //creating a schema in todo database
 const todoSchema = new mongoose.Schema({
-    content: String
+    content: {
+        type: String,
+        required: true
+    }
 });
 
 //making model of schema and colection will automatically named plural of todo i.e. todos
@@ -21,12 +24,12 @@ const showDocument = async () => {
     try {
         const collections = await todo.find({}, { content: 1 })  //returning BSON 
         object = { "c": collections }
-        if(collections[0]==undefined){
-            object = { "data": collections,"message":"Nothing to show!" }
-            
+        if (collections[0] == undefined) {
+            object = { "data": collections, "message": "Nothing to show!" }
+
         }
-        else{
-            object = { "data": collections,"message":"Your Todos"}
+        else {
+            object = { "data": collections, "message": "Your Todos" }
         }
     } catch (error) {
         console.log(error)
@@ -81,6 +84,29 @@ app.get('/todos/:_id', function (req, res) {
     });
 
 });
+
+
+// edit
+app.get("/edit/:id", (req, res) => {
+    const id = req.params.id;
+    todo.find({}, (err, tasks) => {
+        res.render("edit.pug", {
+            data: tasks, idTask: id, message: "Your Todos"
+        });
+    });
+})
+
+app.post("/edit/:id", (req, res) => {
+    const id = req.params.id;
+    todo.findByIdAndUpdate(id, {
+        content: req.body.content
+    }, err => {
+        if (err) return res.send(500, err);
+        res.redirect("/");
+    });
+});
+
+
 // START THE SERVER
 app.listen(port, () => {
     console.log(`The application started successfully on port ${port}`);
